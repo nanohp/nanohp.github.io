@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="gtest入门gtest（google test） 是一个由 Google 开发的开源的 C++ 测试框架，它支持跨平台（Linux、Windows、MacOS 等）测试，并提供从单元测试到接口测试的多层级验证能力。 github：https:&#x2F;&#x2F;github.com&#x2F;google&#x2F;googletest 一个好的测试应该是怎样的？这是来自 google 测试开发团队给出的答案：  测试用例应该是独">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gtest入门">
+<meta property="og:url" content="http://example.com/2025/04/28/c++/gtest%E5%85%A5%E9%97%A8/index.html">
+<meta property="og:site_name" content="Nano">
+<meta property="og:description" content="gtest入门gtest（google test） 是一个由 Google 开发的开源的 C++ 测试框架，它支持跨平台（Linux、Windows、MacOS 等）测试，并提供从单元测试到接口测试的多层级验证能力。 github：https:&#x2F;&#x2F;github.com&#x2F;google&#x2F;googletest 一个好的测试应该是怎样的？这是来自 google 测试开发团队给出的答案：  测试用例应该是独">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/.pic/gtest-library.png">
+<meta property="article:published_time" content="2025-04-28T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-05-30T09:38:53.462Z">
+<meta property="article:author" content="Haopeng Wu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/.pic/gtest-library.png">
+
+
+<link rel="canonical" href="http://example.com/2025/04/28/c++/gtest%E5%85%A5%E9%97%A8/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh_CN","comments":true,"permalink":"http://example.com/2025/04/28/c++/gtest%E5%85%A5%E9%97%A8/","path":"2025/04/28/c++/gtest入门/","title":"gtest入门"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>gtest入门 | Nano</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Nano</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#gtest%E5%85%A5%E9%97%A8"><span class="nav-number">1.</span> <span class="nav-text">gtest入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"><span class="nav-number">1.1.</span> <span class="nav-text">快速上手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B"><span class="nav-number">1.2.1.</span> <span class="nav-text">测试用例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%AD%E8%A8%80"><span class="nav-number">1.2.2.</span> <span class="nav-text">断言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%A4%B9%E5%85%B7"><span class="nav-number">1.2.3.</span> <span class="nav-text">测试夹具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="nav-number">1.2.4.</span> <span class="nav-text">执行测试</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haopeng Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh_CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2025/04/28/c++/gtest%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haopeng Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nano">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="gtest入门 | Nano">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          gtest入门
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-04-28 00:00:00" itemprop="dateCreated datePublished" datetime="2025-04-28T00:00:00+00:00">2025-04-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-05-30 09:38:53" itemprop="dateModified" datetime="2025-05-30T09:38:53+00:00">2025-05-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="gtest入门"><a href="#gtest入门" class="headerlink" title="gtest入门"></a>gtest入门</h1><p>gtest（google test） 是一个由 Google 开发的开源的 C++ 测试框架，它支持跨平台（Linux、Windows、MacOS 等）测试，并提供从单元测试到接口测试的多层级验证能力。</p>
+<p>github：<a target="_blank" rel="noopener" href="https://github.com/google/googletest">https://github.com/google/googletest</a></p>
+<p>一个好的测试应该是怎样的？这是来自 google 测试开发团队给出的答案：</p>
+<ul>
+<li>测试用例应该是独立的和可复现的，彼此之间不会相互影响</li>
+<li>测试用例应该具有组织性，并且可以被测试代码的模块化设计</li>
+<li>测试用例应具备可移植性和复用性，而不是特定于平台实现的</li>
+<li>测试失败时应反馈详细的失败信息，例如失败时的上下文，并且一次性能捕获多个错误</li>
+<li>测试框架应可以自动管理所有的测试用例，而无需使用者手动注册用例、管理依赖</li>
+<li>测试用例对共享资源初始化成本应最小化，以达到最大化测试效率</li>
+</ul>
+<h2 id="快速上手"><a href="#快速上手" class="headerlink" title="快速上手"></a>快速上手</h2><p>从 gtest 源码编译后会包含四个静态库：</p>
+<p><img src="/.pic/gtest-library.png"></p>
+<p>其中 gmock 用于桩函数测试，gtest 用于单元测试。gtest 贴心的为我们准备了 _main 后缀的静态库，其内部实现是一个 main 函数，当我们不想自己写 main 函数的时候，我们就可以链接这个静态库，main 函数会为我们执行所有的测试用例。</p>
+<ul>
+<li>编写一个简单的测试工程</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;gtest/gtest.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="built_in">TEST</span>(Test, MyTest) &#123;</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(<span class="number">1</span> + <span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// gtest_main 的内部实现等价于下面的 main 函数 </span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span> </span>&#123;</span><br><span class="line">    testing::<span class="built_in">InitGoogleTest</span>(&amp;argc, argv);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">RUN_ALL_TESTS</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在 CMake 中添加 gtest 库依赖</li>
+</ul>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.14</span>)</span><br><span class="line"><span class="keyword">project</span>(MyTest)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检索 gtest 库路径 </span></span><br><span class="line"><span class="keyword">find_package</span>(GTest REQUIRED)    </span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(MyTest main.cpp)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 链接 gtest 库</span></span><br><span class="line"><span class="keyword">target_link_libraries</span>(MyTest</span><br><span class="line">    PRIVATE gtest)              </span><br><span class="line"></span><br><span class="line"><span class="keyword">install</span>(TARGETS <span class="variable">$&#123;PROJECT_NAME&#125;</span></span><br><span class="line">    RUNTIME DESTINATION <span class="variable">$&#123;CMAKE_INSTALL_BINDIR&#125;</span>)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>运行测试工程</li>
+</ul>
+<!-- 补图 -->
+
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="测试用例"><a href="#测试用例" class="headerlink" title="测试用例"></a>测试用例</h3><p>在 gtest 框架中我们可以使用 TEST 宏定义一个测试用例，并通过两个输入参数来为这个测试用例命名，它还包含一个不需要返回值的函数体：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">TEST</span>(test_case_name, test_name) &#123;</span><br><span class="line">    <span class="comment">// No need to return</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>测试用例命名没有严格要求，但需要保证 test_case_name 和 test_name 组合的唯一性。通常我们会将 test_case_name 命名为模块名，test_name 用于描述测试的功能。</p>
+</blockquote>
+<p>有了测试用例，怎么测试呢？</p>
+<h3 id="断言"><a href="#断言" class="headerlink" title="断言"></a>断言</h3><p>gtest 框架中主要使用断言来判断代码运行的结果是否符合预期，并非 cassert 里的断言，而是 gtest 提供的两种类型的宏函数，分别以 EXPECT 开头和 ASSERT 开头：</p>
+<ul>
+<li>EXPECT_*(…)：该断言失败时，程序会记录失败信息并继续往下执行</li>
+<li>ASSERT_*(…)：该断言失败时，程序会记录失败信息并跳过当前测试用例，如果你认为失败时继续往下执行没有意义，那么这种断言比较合适</li>
+</ul>
+<blockquote>
+<p>失败信息包括源文件和行号位置，以及期望值和实际值等信息。</p>
+</blockquote>
+<p>嗯，gtest 最简单的用法就是在测试用例中写断言，来进行单元测试。例如下面我们测试一个阶乘函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">Factorial</span><span class="params">(<span class="type">int</span> n)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">TEST</span>(TestFactorial, HandlesZeroInput) &#123;</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(<span class="number">1</span>, <span class="built_in">Factorial</span>(<span class="number">0</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">TEST</span>(TestFactorial, HandlesPositiveInput) &#123;</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(<span class="number">1</span>, <span class="built_in">Factorial</span>(<span class="number">1</span>));</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(<span class="number">2</span>, <span class="built_in">Factorial</span>(<span class="number">2</span>));</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(<span class="number">3</span>, <span class="built_in">Factorial</span>(<span class="number">6</span>));</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(<span class="number">8</span>, <span class="built_in">Factorial</span>(<span class="number">40320</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>gtest 提供了丰富断言函数，均包含 EXPECT 和 ASSERT 版本，以支持不同场景，以 EXPECT 为例：</p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>函数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>布尔值检查</td>
+<td>EXPECT_TRUE(condition) <br> EXPECT_FALSE(condition)</td>
+</tr>
+<tr>
+<td>二元比较函数</td>
+<td>EXPECT_EQ(val1, val2)：val1 &#x3D;&#x3D; val2 <br> EXPECT_NE(val1, val2)：val1 !&#x3D; val2 <br> EXPECT_LT(val1, val2)：val1 &lt; val2 <br> EXPECT_LE(val1, val2)：val1 &lt;&#x3D; val2 <br> EXPECT_GT(val1, val2)：val1 &gt; val2 <br> EXPECT_GE(val1, val2)：val1 &gt;&#x3D; val2</td>
+</tr>
+<tr>
+<td>字符串检查</td>
+<td>EXPECT_STREQ(str1, str2)：str1 &#x3D;&#x3D; str2 <br> EXPECT_STRNE(str1, str2)：str1 !&#x3D; str2 <br> EXPECT_STRCASEEQ(str1, str2)：str1 &#x3D;&#x3D; str2（忽略大小写） <br> EXPECT_STRCASENE(str1, str2)：str1 !&#x3D; str2（忽略大小写）</td>
+</tr>
+<tr>
+<td>浮点型检查</td>
+<td>EXPECT_FLOAT_EQ(expected, actual) <br>  EXPECT_DOUBLE_EQ(expected, actual) <br> EXPECT_NEAR(val1, val2, abs_error)：对相近的两个数比较</td>
+</tr>
+<tr>
+<td>异常检查</td>
+<td>EXPECT_THROW(statement, exception_type)：指定异常 <br> EXPECT_ANY_THROW(statement)：任意异常 <br> EXPECT_NO_THROW(statement)：无异常</td>
+</tr>
+<tr>
+<td>显示成功或失败</td>
+<td>SUCCEED() <br> ADD_FAILURE()：失败 <br> FAIL()：失败，但不继续往下执行</td>
+</tr>
+</tbody></table>
+<p>断言函数还支持左移运算符来追加自定义补充信息，不过这些信息只有在断言失败时才会输出。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">EXPECT_TRUE</span>(<span class="literal">false</span>) &lt;&lt; <span class="string">&quot;damn, it failed&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="测试夹具"><a href="#测试夹具" class="headerlink" title="测试夹具"></a>测试夹具</h3><p>如果你发现自己写的几个测试用例中都需要执行一段相同且大量的初始化代码，那么可以试试使用测试夹具，它旨在于减少重复的代码。</p>
+<p>定义一个测试夹具需要使用到 TEST_F 宏，它接受两个参数： test_fixture 和 test_name，其中 test_fixture 是我们自定义的测试夹具类，它继承自 testing::Test 类，并重载了 SetUp() 和 TearDown() 方法。</p>
+<p>以测试 std::queue 为例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">QueueTester</span> : <span class="keyword">public</span> testing::Test </span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">SetUp</span><span class="params">()</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// std::cout &lt;&lt; &quot;SetUp&quot; &lt;&lt; std::endl;</span></span><br><span class="line">        q_.<span class="built_in">push</span>(<span class="number">1</span>);</span><br><span class="line">        q_.<span class="built_in">push</span>(<span class="number">2</span>);</span><br><span class="line">        q_.<span class="built_in">push</span>(<span class="number">3</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">TearDown</span><span class="params">()</span> <span class="keyword">override</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">// std::cout &lt;&lt; &quot;TearDown&quot; &lt;&lt; std::endl;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    std::queue&lt;<span class="type">int</span>&gt; q_;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">TEST_F</span>(QueueTester, Works) &#123;</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(q_.<span class="built_in">size</span>(), <span class="number">3</span>);</span><br><span class="line">    <span class="built_in">EXPECT_EQ</span>(q_.<span class="built_in">front</span>(), <span class="number">1</span>);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要重复使用的数据可以定义为 protected 成员变量，这样在测试用例中可以直接访问测试夹具中的成员变量。</p>
+<p>SetUp 和 TearDown 是两个回调函数，在执行我们的测试用例之前，gtest 框架会先调用我们重载的 SetUp 方法，执行完测试用例之后，会调用 TearDown 方法。</p>
+<blockquote>
+<p>SetUp 和 TearDown 可以用于做一些初始化和清理的工作，虽然感觉构造函数和析构函数也一样能完成。</p>
+</blockquote>
+<h3 id="执行测试"><a href="#执行测试" class="headerlink" title="执行测试"></a>执行测试</h3><p>TEST 宏和 TEST_F 宏都会隐式地将测试用例注册到 gtest 框架中，和其他测试框架不同，不需要手动注册，只需要执行 RUN_ALL_TESTS 方法，即可运行所有已注册的测试用例。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ::testing::<span class="built_in">InitGoogleTest</span>(&amp;argc, argv);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">RUN_ALL_TESTS</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>好了，你已经掌握了 gtest 的基本用法，开始做打杂牛马吧~</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/01/c++/call_once/" rel="prev" title="std::call_once">
+                  <i class="fa fa-angle-left"></i> std::call_once
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/29/c++/gtest%E8%BF%9B%E9%98%B6/" rel="next" title="gtest进阶">
+                  gtest进阶 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haopeng Wu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
