@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="在 Linux 下使用 gdb 调试gdb 是 Unix 系统下源码级调试工具，用于查看程序在执行过程中的内部状态，或者在程序发生崩溃时可以查看崩溃在哪。gdb 通过将调试进程作为 gdb 的子进程，并接管待调试程序的所有信号，以达到调试的目的。 gdb 不仅限于 c++ 开发中的调试，作为 rust、go 等语言的开发者，同样也可以使用 gdb 进行调试。 gdb 的代码是开源的，我们可以从官网">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在 Linux 下使用 gdb 调试">
+<meta property="og:url" content="http://example.com/2023/05/29/c++/gdb%E8%B0%83%E8%AF%95/index.html">
+<meta property="og:site_name" content="Nano">
+<meta property="og:description" content="在 Linux 下使用 gdb 调试gdb 是 Unix 系统下源码级调试工具，用于查看程序在执行过程中的内部状态，或者在程序发生崩溃时可以查看崩溃在哪。gdb 通过将调试进程作为 gdb 的子进程，并接管待调试程序的所有信号，以达到调试的目的。 gdb 不仅限于 c++ 开发中的调试，作为 rust、go 等语言的开发者，同样也可以使用 gdb 进行调试。 gdb 的代码是开源的，我们可以从官网">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-29T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-06T09:20:49.867Z">
+<meta property="article:author" content="Haopeng Wu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/05/29/c++/gdb%E8%B0%83%E8%AF%95/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh_CN","comments":true,"permalink":"http://example.com/2023/05/29/c++/gdb%E8%B0%83%E8%AF%95/","path":"2023/05/29/c++/gdb调试/","title":"在 Linux 下使用 gdb 调试"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>在 Linux 下使用 gdb 调试 | Nano</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Nano</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8-Linux-%E4%B8%8B%E4%BD%BF%E7%94%A8-gdb-%E8%B0%83%E8%AF%95"><span class="nav-number">1.</span> <span class="nav-text">在 Linux 下使用 gdb 调试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#gdb-%E7%9A%84%E6%A0%B8%E5%BF%83-ptrace"><span class="nav-number">1.1.</span> <span class="nav-text">gdb 的核心 ptrace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E6%8C%87%E5%8D%97"><span class="nav-number">1.2.</span> <span class="nav-text">调试指南</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87-gdb-%E5%90%AF%E5%8A%A8%E8%BF%9B%E7%A8%8B%E8%B0%83%E8%AF%95"><span class="nav-number">1.2.1.</span> <span class="nav-text">通过 gdb 启动进程调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%84%E5%8A%A0%E8%B0%83%E8%AF%95"><span class="nav-number">1.2.2.</span> <span class="nav-text">附加调试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#coredump"><span class="nav-number">1.2.3.</span> <span class="nav-text">coredump</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#core-%E6%96%87%E4%BB%B6%E7%94%9F%E6%88%90"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">core 文件生成</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E8%B0%83%E8%AF%95%E5%91%BD%E4%BB%A4"><span class="nav-number">1.3.</span> <span class="nav-text">常见调试命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%96%AD%E7%82%B9"><span class="nav-number">1.3.1.</span> <span class="nav-text">添加断点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%98%BE%E7%A4%BA%E4%BB%A3%E7%A0%81"><span class="nav-number">1.3.2.</span> <span class="nav-text">显示代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%BD%93%E5%89%8D%E5%A0%86%E6%A0%88"><span class="nav-number">1.3.3.</span> <span class="nav-text">查看当前堆栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6%E6%B5%81"><span class="nav-number">1.3.4.</span> <span class="nav-text">控制流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6"><span class="nav-number">1.3.5.</span> <span class="nav-text">多线程调度</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haopeng Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh_CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/29/c++/gdb%E8%B0%83%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haopeng Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nano">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="在 Linux 下使用 gdb 调试 | Nano">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在 Linux 下使用 gdb 调试
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-05-29 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-29T00:00:00+00:00">2023-05-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-06-06 09:20:49" itemprop="dateModified" datetime="2025-06-06T09:20:49+00:00">2025-06-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="在-Linux-下使用-gdb-调试"><a href="#在-Linux-下使用-gdb-调试" class="headerlink" title="在 Linux 下使用 gdb 调试"></a>在 Linux 下使用 gdb 调试</h1><p>gdb 是 Unix 系统下源码级调试工具，用于查看程序在执行过程中的内部状态，或者在程序发生崩溃时可以查看崩溃在哪。gdb 通过将调试进程作为 gdb 的子进程，并接管待调试程序的所有信号，以达到调试的目的。</p>
+<p>gdb 不仅限于 c++ 开发中的调试，作为 rust、go 等语言的开发者，同样也可以使用 gdb 进行调试。</p>
+<p>gdb 的代码是开源的，我们可以从官网上自行下载源码编译并部署到我们自己的系统上，或使用包管理系统安装 gdb：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install gdb</span><br></pre></td></tr></table></figure>
+
+<p>源码包下载路径：<a target="_blank" rel="noopener" href="https://ftp.gnu.org/gnu/gdb/">https://ftp.gnu.org/gnu/gdb/</a></p>
+<h2 id="gdb-的核心-ptrace"><a href="#gdb-的核心-ptrace" class="headerlink" title="gdb 的核心 ptrace"></a>gdb 的核心 ptrace</h2><p>ptrace（process trace）是一个系统调用，能够为一个进程提供观察和控制另一个进程的执行过程的能力，同时也提供检查和改变另一个进程的内存值以及相关注册信息的能力，被控制的进程称为 tracee，控制进程称为 tracer，tracer 会接管 tracee 的所有信号。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">long</span> <span class="title">ptrace</span><span class="params">(<span class="keyword">enum</span> __ptrace_request request, <span class="type">pid_t</span> pid,</span></span></span><br><span class="line"><span class="params"><span class="function">               <span class="type">void</span> *addr, <span class="type">void</span> *data)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>request，要执行的操作类型<ul>
+<li>PTRACE_TRACEME，将当前进程标记为被追踪的对象</li>
+<li>PTRACE_ATTACH，将一个进程附加到另一个进程上进行调试跟踪</li>
+<li>PTRACE_DETACH，从一个已经被附加和调试的进程上分离调试器</li>
+<li>PTRACE_PEEKDATA，从目标进程中的内存读取数据</li>
+<li>PTRACE_POKEDATA，从目标进程中的内存写入数据</li>
+<li>PTRACE_GETREGS，从目标进程的寄存器中读取数据</li>
+<li>PTRACE_SETREGS，向目标进程的寄存器中写入数据</li>
+<li>PTRACE_CONT，继续执行目标进程</li>
+</ul>
+</li>
+<li>pid，要追踪的目标进程 ID</li>
+<li>addr，被监控的目标内存地址</li>
+<li>data，读取或者要写入的数据</li>
+</ul>
+<h2 id="调试指南"><a href="#调试指南" class="headerlink" title="调试指南"></a>调试指南</h2><p>在调试前需要确保调试程序具备调试信息，例如为编译后的程序保留调试符号信息，例如在使用 gcc 编译时使用了 -g 选项，cmake 中可以使用下面任意一条语句：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_compile_options</span>(-g)</span><br><span class="line"><span class="keyword">target_compile_options</span>(my_executable PRIVATE -g)</span><br></pre></td></tr></table></figure>
+
+<p>同时建议关闭优化选项，否则可能会导致调试信息与源代码对应不上：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_compile_options</span>(-O0)</span><br><span class="line"><span class="keyword">target_compile_options</span>(my_executable PRIVATE -O0)</span><br></pre></td></tr></table></figure>
+
+<p>下面介绍几种 gdb 的常见调试方法：</p>
+<h3 id="通过-gdb-启动进程调试"><a href="#通过-gdb-启动进程调试" class="headerlink" title="通过 gdb 启动进程调试"></a>通过 gdb 启动进程调试</h3><p>直接通过 gdb + &lt;可执行程序&gt; 来启动调试，这时 gdb 会调用 fork 来创建一个子进程：</p>
+<ul>
+<li>调用系统函数 ptrace + PTRACE_TRACEME，表示希望父进程对齐进行追踪</li>
+<li>调用 exec 执行可执行程序，此时子进程会进入 TASK_TRACE 状态，父进程可以通过 ptrace 来控制子进程，观察子进程的执行状态</li>
+</ul>
+<h3 id="附加调试"><a href="#附加调试" class="headerlink" title="附加调试"></a>附加调试</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">gdb attach &lt;pid&gt;</span><br><span class="line">gdb -p &lt;pid&gt;        <span class="comment"># 还是这种方式好记    </span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>此时 gdb 会调用 ptrace + PTRACE_ATTACH 来附加到目标进程，并将目标进程作为 gdb 的子进程</li>
+<li>接着 gdb 发送 SIGSTOP 信号给调试进程，调试进程收到信号后会暂停进入 TASK_STOP 状态</li>
+</ul>
+<h3 id="coredump"><a href="#coredump" class="headerlink" title="coredump"></a>coredump</h3><p>在此之前先说明以下什么是 coredump 文件，它是一个在程序崩溃时记录进程当前状态的一个快照文件，它包含进程当前内存、寄存器、运行堆栈等信息。coredump 调试通常是我们在排查线上问题的主要手段。</p>
+<h4 id="core-文件生成"><a href="#core-文件生成" class="headerlink" title="core 文件生成"></a>core 文件生成</h4><p>默认情况下程序崩溃不会产生 core 文件，那么如何生成 coredump 文件？</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">ulimit</span> -c   <span class="comment"># 查看 core 文件限制大小，如为 0 表示不会生成 core 文件</span></span><br><span class="line"><span class="built_in">ulimit</span> -a   <span class="comment"># 懒人法，会列出系统的所有限制，其中 core file size 代表 core 文件大小，0 表示不会生成</span></span><br><span class="line"><span class="built_in">ulimit</span> -c unlimited     <span class="comment"># 设置为 unlimited，表示产生 core 文件, 且不限制 core 文件大小</span></span><br></pre></td></tr></table></figure>
+
+<p>上述指令会程序崩溃时在程序的工作目录生成 core 文件，在重启系统后失效，如需要永久生效，可以修改 &#x2F;etc&#x2F;security&#x2F;limits.conf 文件，或扔 &#x2F;etc&#x2F;profile 里，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">* soft core unlimited   <span class="comment"># 所有用户的软限制</span></span><br><span class="line">* hard core unlimited   <span class="comment"># 所有用户的硬限制</span></span><br></pre></td></tr></table></figure>
+
+<p>如使用的是 systemd 系统，可以修改 &#x2F;etc&#x2F;systemd&#x2F;system.conf 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DefaultLimitCORE=infinity</span><br></pre></td></tr></table></figure>
+
+<p>如需要修改生成路径则需要修改 &#x2F;etc&#x2F;sysctl.conf 文件或使用 sysctl -w 设置，例如：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kernal.core_pattern = /tmp/core.%e.%p.%t        <span class="comment"># 指定 core 文件生成路径</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;/tmp/core.%e.%p.%t&quot;</span> &gt; /proc/sys/kernel/core_pattern   <span class="comment"># 或者这种方式也行</span></span><br></pre></td></tr></table></figure>
+
+<p>常见 pattern：</p>
+<ul>
+<li>%c core 文件大小</li>
+<li>%e 可执行文件名</li>
+<li>%g 进程组 ID</li>
+<li>%h 主机名</li>
+<li>%p 进程 ID</li>
+<li>%s 进程状态</li>
+<li>%t 时间戳</li>
+<li>%u 用户名</li>
+<li>%g 进程组 ID</li>
+<li>%t 产生的时间</li>
+<li>%u 用户名</li>
+<li>%p 进程 ID</li>
+<li>%s 所dump 的信号</li>
+<li>%u ，%u用户id</li>
+</ul>
+<h2 id="常见调试命令"><a href="#常见调试命令" class="headerlink" title="常见调试命令"></a>常见调试命令</h2><ul>
+<li>传递参数：set args …</li>
+<li>运行：r（run）</li>
+<li>开始调试？：start，停止在main，用于单步调试</li>
+<li>下一步：n（next）</li>
+<li>继续运行：c（continue）</li>
+<li>detach：分离调试器</li>
+</ul>
+<p>如不记得某个命令的用法，可以使用 help &lt;具体的命令&gt; 来查看</p>
+<h3 id="添加断点"><a href="#添加断点" class="headerlink" title="添加断点"></a>添加断点</h3><p>通过 break（b）指令我们可以添加一个断点，程序会在运行到断点处停下：</p>
+<ul>
+<li>break function，在函数的入口处添加一个断点</li>
+<li>break line，在当前文件的行号处添加一个断点</li>
+<li>break filename:line，在指定文件的行号处添加一个断点</li>
+</ul>
+<p>在上述操作的基础上将 break 改成 tbreak（tb）则会添加一个临时断点，只会触发一次</p>
+<p>断点指令后可以添加条件表达式，例如：b func if xxx，表示在断点处满足条件才触发断点</p>
+<p>可以通过 info b 指令查看所有断点，每个断点都有一个自己的编号，我们可以使用 delete <Num>、enable <Num>、disable <Num> 来对断点进行操作</p>
+<p>.. image:: .&#x2F;pic&#x2F;20250304-110028.jpg</p>
+<p>断点可以通过 save b filename 和 source filename 来将断点操作保存到指定的文件或从中读取</p>
+<h3 id="显示代码"><a href="#显示代码" class="headerlink" title="显示代码"></a>显示代码</h3><p>使用 list（l）指令可以查看当前执行位置附近的代码，前提是开了 debug 模式，不然啥都看不见（）</p>
+<p>和断点的操作指令类似，可以查看指定函数、行号附近的代码</p>
+<p>list 每次执行都会打印上次打印后面的代码，也可以使用 l - ， l+ 来调整打印的位置</p>
+<ul>
+<li>list FIRST, LAST，指定打印行号范围</li>
+<li>set listsize COUNT，设置每次打印的行数</li>
+<li>show listsize，查看每次打印的行数</li>
+</ul>
+<h3 id="查看当前堆栈"><a href="#查看当前堆栈" class="headerlink" title="查看当前堆栈"></a>查看当前堆栈</h3><p>通过 backtrace（bt）来查看当前调用堆栈，可以很清晰的看到函数的调用关系，例如下面的函数调用栈；</p>
+<p>.. image:: .&#x2F;pic&#x2F;20250304-104146.jpg</p>
+<p>使用 frame &lt;堆栈编号&gt; 可以跳转到响应的堆栈（函数）处</p>
+<p>使用 print（p） 指令可以打印一些信息，就像操作一个实际的变量一样：</p>
+<ul>
+<li>p var，打印变量 var 的值</li>
+<li>p &amp;var，打印变量 var 的地址</li>
+<li>p *var，打印指针 var 的内容</li>
+<li>p strerror(errno)，甚至是调用函数打印其返回值</li>
+</ul>
+<p>使用 ptype（pt）查看一个变量的类型</p>
+<p>watch 变量名或内存地址，当变量的值发生变化时，gdb 会在当前位置暂停，并打印变量的值，每个 watch 都有对应编号，可以像操作断点那样操作一个监控</p>
+<h3 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h3><ul>
+<li>step（s）单步执行，遇到函数是会进入函数体内部</li>
+<li>next（n）单步执行，遇到函数不会进入函数体内部</li>
+<li>finish，执行完当前函数</li>
+<li>return，直接从当前函数返回，可以在指令后指定返回值</li>
+<li>until（u），执行到指定行号</li>
+</ul>
+<h3 id="多线程调度"><a href="#多线程调度" class="headerlink" title="多线程调度"></a>多线程调度</h3><p>使用 info threads 可以查看所有线程，每个线程都会有一个 Id，我们可以使用 thread <Id> 切换到对应线程</p>
+<p>那么在多线程调试环境下，如果正在调试当前的线程，那么其他线程表现如何？调度器锁用于控制其他线程的行为，他有下面几个模式：</p>
+<ul>
+<li>on，只有当前线程可以运行，其他线程暂停运行</li>
+<li>off，没有锁定，任何线程都可以随时运行</li>
+<li>step，当单步执行某一线程时（使用step、next）其他线程不会执行，当使用 continue、finish、return、until 时其他线程会继续运行</li>
+<li>replay，默认模式，在重放模式下，其他线程会被暂停，正常执行期间，其他线程可以随时运行（重放模式后面会讲到）</li>
+</ul>
+<p>通过 show scheduler-locking 指令，我们可以查看当前的调度锁模式，使用 set scheduler-locking <mode> 来修改调度锁模式</p>
+<p>重放是使用 replay 指令记录之前执行过的操作，使用 reverse-* 来反向执行的一种操作，暂时想不到什么使用场景，埋个坑</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/05/28/c++/const%E4%B8%8Econstexpr/" rel="prev" title="const 与 constexpr">
+                  <i class="fa fa-angle-left"></i> const 与 constexpr
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/05/30/c++/%E5%AD%98%E5%82%A8%E7%B1%BB%E8%AF%B4%E6%98%8E%E7%AC%A6/" rel="next" title="存储类说明符">
+                  存储类说明符 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haopeng Wu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

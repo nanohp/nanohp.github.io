@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="const 与 constexprconstexpr 是 C++11 引入的新说明符，它和 const 具有相同的特性：  都可以用于修饰变量，被修饰的变量不可修改 修饰函数的返回值时，表示返回值是常量  不同点在于，constexpr 核心目标是将对象的计算转移到编译器，而不需要像 const 那样等到运行时，使程序运行速度更快、占用内存更少。下面是 constexpr 的一些应用场景： con">
+<meta property="og:type" content="article">
+<meta property="og:title" content="const 与 constexpr">
+<meta property="og:url" content="http://example.com/2023/05/28/c++/const%E4%B8%8Econstexpr/index.html">
+<meta property="og:site_name" content="Nano">
+<meta property="og:description" content="const 与 constexprconstexpr 是 C++11 引入的新说明符，它和 const 具有相同的特性：  都可以用于修饰变量，被修饰的变量不可修改 修饰函数的返回值时，表示返回值是常量  不同点在于，constexpr 核心目标是将对象的计算转移到编译器，而不需要像 const 那样等到运行时，使程序运行速度更快、占用内存更少。下面是 constexpr 的一些应用场景： con">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-28T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-06T09:20:49.867Z">
+<meta property="article:author" content="Haopeng Wu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/05/28/c++/const%E4%B8%8Econstexpr/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh_CN","comments":true,"permalink":"http://example.com/2023/05/28/c++/const%E4%B8%8Econstexpr/","path":"2023/05/28/c++/const与constexpr/","title":"const 与 constexpr"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>const 与 constexpr | Nano</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Nano</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#const-%E4%B8%8E-constexpr"><span class="nav-number">1.</span> <span class="nav-text">const 与 constexpr</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#constexpr-%E5%8F%98%E9%87%8F"><span class="nav-number">1.1.</span> <span class="nav-text">constexpr 变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#constexpr-%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">constexpr 函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#constexpr-%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="nav-number">1.3.</span> <span class="nav-text">constexpr 成员函数</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haopeng Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh_CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/28/c++/const%E4%B8%8Econstexpr/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haopeng Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nano">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="const 与 constexpr | Nano">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          const 与 constexpr
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-05-28 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-28T00:00:00+00:00">2023-05-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-06-06 09:20:49" itemprop="dateModified" datetime="2025-06-06T09:20:49+00:00">2025-06-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="const-与-constexpr"><a href="#const-与-constexpr" class="headerlink" title="const 与 constexpr"></a>const 与 constexpr</h1><p>constexpr 是 C++11 引入的新说明符，它和 const 具有相同的特性：</p>
+<ul>
+<li>都可以用于修饰变量，被修饰的变量不可修改</li>
+<li>修饰函数的返回值时，表示返回值是常量</li>
+</ul>
+<p>不同点在于，constexpr 核心目标是将对象的计算转移到编译器，而不需要像 const 那样等到运行时，使程序运行速度更快、占用内存更少。下面是 constexpr 的一些应用场景：</p>
+<h2 id="constexpr-变量"><a href="#constexpr-变量" class="headerlink" title="constexpr 变量"></a>constexpr 变量</h2><p>被 constexpr 修饰的变量，必须通过常量表达式初始化。</p>
+<p>被 constexpr 修饰的静态成员变量允许直接在类内声明并初始化，而无需在类外定义。</p>
+<h2 id="constexpr-函数"><a href="#constexpr-函数" class="headerlink" title="constexpr 函数"></a>constexpr 函数</h2><p>C++ 11 下，被 constexpr 修饰的函数，只能有一条 return 语句，且 return 语句的返回值必须是常量表达式。</p>
+<p>C++ 14 下放宽了 constexpr 函数的能力，使其可以支持更复杂的逻辑，如 constexpr 函数可以支持创建局部变量、for、if 语句。</p>
+<p>C++ 17 下 constexpr 可以被用于修饰 lambda 表达式，同时还可以用于编译器选择代码分支，以替代 SFINAE：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">constexpr</span> <span class="keyword">auto</span> <span class="title">get_value</span><span class="params">(T t)</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">if</span> <span class="title">constexpr</span> <span class="params">(std::is_pointer_v&lt;T&gt;)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> *t;  <span class="comment">// 若 T 是指针类型，编译此分支</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> t;   <span class="comment">// 否则编译此分支</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="constexpr-成员函数"><a href="#constexpr-成员函数" class="headerlink" title="constexpr 成员函数"></a>constexpr 成员函数</h2><p>被修饰为 &#x3D; default 或 &#x3D; delete 的函数，可以被声明为 constexpr。</p>
+<p>C++ 11 下，constexpr 构造函数的函数体必须为空，这意味着所有成员必须初始化，且只能通过初始化列表的方式初始化；C++ 14 后，允许函数体包含一些简单的运算。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/05/27/c++/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/" rel="prev" title="智能指针">
+                  <i class="fa fa-angle-left"></i> 智能指针
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/05/29/c++/gdb%E8%B0%83%E8%AF%95/" rel="next" title="在 Linux 下使用 gdb 调试">
+                  在 Linux 下使用 gdb 调试 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haopeng Wu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
