@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="模板编程模板类的代码不直接参与编译，而是由编译器在编译时根据模板参数来生成代码，这种过程我们称之为模板实例化 模板实例化的过程在代码中使用模板类构造对象或调用模板函数时，编译器会根据模板参数的实参来实例化模板类或模板函数，这种方式我们称之为隐式实例化 123456789101112template &lt;typename T&gt;class MyClass &#123;&#125;templa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模板编程">
+<meta property="og:url" content="http://example.com/2023/05/31/c++/%E6%A8%A1%E6%9D%BF%E7%BC%96%E7%A8%8B/index.html">
+<meta property="og:site_name" content="Nano">
+<meta property="og:description" content="模板编程模板类的代码不直接参与编译，而是由编译器在编译时根据模板参数来生成代码，这种过程我们称之为模板实例化 模板实例化的过程在代码中使用模板类构造对象或调用模板函数时，编译器会根据模板参数的实参来实例化模板类或模板函数，这种方式我们称之为隐式实例化 123456789101112template &lt;typename T&gt;class MyClass &#123;&#125;templa">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-31T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-27T09:26:14.485Z">
+<meta property="article:author" content="Haopeng Wu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/05/31/c++/%E6%A8%A1%E6%9D%BF%E7%BC%96%E7%A8%8B/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh_CN","comments":true,"permalink":"http://example.com/2023/05/31/c++/%E6%A8%A1%E6%9D%BF%E7%BC%96%E7%A8%8B/","path":"2023/05/31/c++/模板编程/","title":"模板编程"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>模板编程 | Nano</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Nano</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E7%BC%96%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">模板编程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E5%AE%9E%E4%BE%8B%E5%8C%96%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">模板实例化的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%90%83%E5%8F%96"><span class="nav-number">1.2.</span> <span class="nav-text">类型萃取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SFINAE"><span class="nav-number">1.3.</span> <span class="nav-text">SFINAE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%80%9C-nullptr%E2%80%9D%E5%92%8C%E2%80%9Ctypename-typename%E2%80%9D%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.4.</span> <span class="nav-text">“* &#x3D; nullptr”和“typename &#x3D; typename”是什么?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-%E2%80%9CU-T%E2%80%9D"><span class="nav-number">1.5.</span> <span class="nav-text">为什么需要 “U &#x3D; T”</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haopeng Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh_CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/31/c++/%E6%A8%A1%E6%9D%BF%E7%BC%96%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haopeng Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nano">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="模板编程 | Nano">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          模板编程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-05-31 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-31T00:00:00+00:00">2023-05-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-06-27 09:26:14" itemprop="dateModified" datetime="2025-06-27T09:26:14+00:00">2025-06-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="模板编程"><a href="#模板编程" class="headerlink" title="模板编程"></a>模板编程</h1><p>模板类的代码不直接参与编译，而是由编译器在编译时根据模板参数来生成代码，这种过程我们称之为模板实例化</p>
+<h2 id="模板实例化的过程"><a href="#模板实例化的过程" class="headerlink" title="模板实例化的过程"></a>模板实例化的过程</h2><p>在代码中使用模板类构造对象或调用模板函数时，编译器会根据模板参数的实参来实例化模板类或模板函数，这种方式我们称之为隐式实例化</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">T <span class="title">add</span><span class="params">(T a, T b)</span> </span>&#123; <span class="keyword">return</span> a + b; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    MyClass&lt;<span class="type">int</span>&gt; obj;   <span class="comment">// 编译器根据模板参数 int 生成 Wrapper&lt;int&gt; 类型</span></span><br><span class="line">    <span class="built_in">add</span>&lt;<span class="type">int</span>&gt;(<span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 生成函数 add&lt;int&gt;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>当然，还有显示实例化。在c++标准库的头文件可以遇到很多模板特化的模板类</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;&gt; <span class="keyword">class</span> <span class="title class_">MyClass</span>&lt;<span class="type">int</span>&gt; &#123;&#125;;  <span class="comment">// 模板特化</span></span><br></pre></td></tr></table></figure>
+
+<p>如果没有显示指定模板参数，编译器会根据上下文（例如函数调用时传入的参数类型）推导出模板参数，例如上文的模板函数 add </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function">T <span class="title">add</span><span class="params">(T a, T b)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>* argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">add</span>(<span class="number">1</span>, <span class="number">2</span>); <span class="comment">// 类型推导</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在实例化模板类时，编译器将模板类的<strong>每个成员函数和对象</strong>都根据给定的类型进行绑定，生成与特定类型相关的代码，不同的类型的代码是相互独立的</p>
+<h2 id="类型萃取"><a href="#类型萃取" class="headerlink" title="类型萃取"></a>类型萃取</h2><p>简单来讲就是在编译期间对类型进行检查，判断类型是否满足某个条件，以便于我们做出决策（编译失败或其他），否则代码有可能在运行过程中出现未定义行为</p>
+<p>下图是一个模板封装类，在模板参数不支持默认构造时，会报 no type named ‘type’ in ‘struct std::enable_if&lt;false, void&gt;’ </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Wrapper</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> std::enable_if&lt;std::is_default_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="function"><span class="keyword">constexpr</span> <span class="title">Wrapper</span><span class="params">()</span> <span class="keyword">noexcept</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T value_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>std::enable_if 是一个模板，它接受两个参数，第一个参数是一个布尔值，第二个参数是模板参数的类型，如果第一个参数为 true，则 std::enable_if 会定义一个和第二个参数相同类型的 type 成员，反之不会</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;<span class="type">bool</span>, <span class="keyword">typename</span> _Tp = <span class="type">void</span>&gt;</span><br><span class="line">    <span class="keyword">struct</span> enable_if</span><br><span class="line">    &#123; &#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> _Tp&gt;</span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">enable_if</span>&lt;<span class="literal">true</span>, _Tp&gt;</span><br><span class="line">    &#123; <span class="keyword">typedef</span> _Tp type; &#125;;</span><br></pre></td></tr></table></figure>
+
+<p>通过这样的方式，我们可以限制模板参数的类型，当传入不符合的类型时，编译器会报错，当然这个用例更推荐使用比较直观的静态断言去实现</p>
+<h2 id="SFINAE"><a href="#SFINAE" class="headerlink" title="SFINAE"></a>SFINAE</h2><p>有时候当用户传入的类型不合法时，我们也不能一棒子打死，在复杂一点的模板编程中，往往会实现多个模板重载，以适配不同的输入类型，而这离不开 C++ 的 SFINAE 机制</p>
+<p>SFINAE（Substitution Failure Is Not An Error）顾名思义，就是当进行模板参数替换时，如果遇到了不合法的类型或条件时，编译器不会报错而是尝试其他可行的模板重载</p>
+<p>这里有一个关键点是，一定要有其他的重载函数，否则编译器还是会报错</p>
+<p>举个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;std::is_integral&lt;T&gt;::value&gt;::<span class="function">type </span></span><br><span class="line"><span class="function"><span class="title">print</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; value &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">typename</span> std::enable_if&lt;std::is_floating_point&lt;T&gt;::value&gt;::<span class="function">type</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">print</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; value &lt;&lt; std::endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果没有 SFINAE 机制，上述的代码在实例化 int 版本的 print 时会报错，而如果没有第二个重载函数，编译器同样也会报错</p>
+<h2 id="“-nullptr”和“typename-typename”是什么"><a href="#“-nullptr”和“typename-typename”是什么" class="headerlink" title="“* &#x3D; nullptr”和“typename &#x3D; typename”是什么?"></a>“* &#x3D; nullptr”和“typename &#x3D; typename”是什么?</h2><p>模板参数可以接收一个类型，也可以接收一个值，当进行模板参数替换时，编译器需要知道模板参数的具体类型或值，以下面这个模板为例：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, <span class="type">bool</span> B&gt;</span><br></pre></td></tr></table></figure>
+
+<p>编译器需要知道 T 的具体类型，同样也需要知道B的具体值，否则模板参数就是无效的，编译器会报错。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, </span><br><span class="line">              <span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_move_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line"><span class="keyword">constexpr</span> <span class="built_in">Wrapper</span>(T &amp;&amp;value) <span class="keyword">noexcept</span></span><br></pre></td></tr></table></figure>
+
+<p>typename type 会被翻译成具体的类型名，因此这里可以理解为当T支持移动构造时</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T, </span><br><span class="line">              <span class="keyword">typename</span> U = <span class="type">void</span>&gt;</span><br></pre></td></tr></table></figure>
+
+<p>模板的参数名是可以缺省的，因此 “typename name &#x3D; typename” 可以被简写成 “typename &#x3D; typename”，“typename *name &#x3D; nullptr”被简写成了“typename * &#x3D; nullptr”</p>
+<h2 id="为什么需要-“U-T”"><a href="#为什么需要-“U-T”" class="headerlink" title="为什么需要 “U &#x3D; T”"></a>为什么需要 “U &#x3D; T”</h2><p>如果我们按照如下实现一个模板类，并传入一个不支持拷贝构造的模板参数，那么无论如何，编译器都不会编译通过</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Wrapper</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_default_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="built_in">Wrapper</span>() <span class="keyword">noexcept</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_copy_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="keyword">constexpr</span> <span class="built_in">Wrapper</span>(T <span class="type">const</span> &amp;value) <span class="keyword">noexcept</span> </span><br><span class="line">        : <span class="built_in">value_</span>(value) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_move_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="keyword">constexpr</span> <span class="built_in">Wrapper</span>(T &amp;&amp;value) <span class="keyword">noexcept</span></span><br><span class="line">        : <span class="built_in">value_</span>(std::<span class="built_in">move</span>(value)) &#123;&#125;</span><br><span class="line">        </span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_copy_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    T &amp;<span class="built_in">value</span>() &amp; <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> value_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_copy_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="type">const</span> T &amp;<span class="built_in">value</span>() <span class="type">const</span> &amp; <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> value_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_move_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    T &amp;&amp;<span class="built_in">value</span>() &amp;&amp; <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">move</span>(value_);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T value_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>编译器在实例化一个模板类时，会首先替换类的模板参数，此处的 T 作为类的模板参数会被翻译成具体的类型，而不是一个函数的模板参数，因此编译器会报错</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">late &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Wrapper</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_default_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="built_in">Wrapper</span>() <span class="keyword">noexcept</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_copy_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="keyword">constexpr</span> <span class="built_in">Wrapper</span>(T <span class="type">const</span> &amp;value) <span class="keyword">noexcept</span> </span><br><span class="line">        : <span class="built_in">value_</span>(value) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_move_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="keyword">constexpr</span> <span class="built_in">Wrapper</span>(T &amp;&amp;value) <span class="keyword">noexcept</span></span><br><span class="line">        : <span class="built_in">value_</span>(std::<span class="built_in">move</span>(value)) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_copy_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    T &amp;<span class="built_in">value</span>() &amp; <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> value_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_copy_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    <span class="type">const</span> T &amp;<span class="built_in">value</span>() <span class="type">const</span> &amp; <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> value_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> = <span class="keyword">typename</span> std::enable_if&lt;std::is_move_constructible&lt;T&gt;::value&gt;::type&gt;</span><br><span class="line">    T &amp;&amp;<span class="built_in">value</span>() &amp;&amp; <span class="keyword">noexcept</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> std::<span class="built_in">move</span>(value_);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    T value_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>而如果我们使用 U &#x3D; T 作为函数的默认模板，我们为这个函数定义了一个模板参数 U，那么编译器会认为这个函数是是一个模板函数，模板函数只有在被调用的时候才会被实例化，通过使用 U &#x3D; T 的方式，我们也延迟了 SFINAE 的检查。没有被调用的函数，当然不会编译报错</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/05/30/c++/%E5%AD%98%E5%82%A8%E7%B1%BB%E8%AF%B4%E6%98%8E%E7%AC%A6/" rel="prev" title="存储类说明符">
+                  <i class="fa fa-angle-left"></i> 存储类说明符
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/06/01/c++/%E8%BF%AD%E4%BB%A3%E5%99%A8/" rel="next" title="迭代器">
+                  迭代器 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haopeng Wu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
