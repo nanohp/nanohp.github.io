@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="智能指针什么是智能指针？智能指针是用于帮助用户管理动态内存的模板类，通过利用 RAII 机制，确保对象在生命周期结束时自动释放内存，而不需要用户手动释放。 目前 C++11 有四种类型的智能指针：unique_ptr、shared_ptr、weak_ptr 和 auto_ptr。 auto_ptrauto_ptr 是 C++98 中的智能指针，由于它不支持托管资源的复制，在 C++11 中被弃用，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智能指针">
+<meta property="og:url" content="http://example.com/2023/05/27/c++/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/index.html">
+<meta property="og:site_name" content="Nano">
+<meta property="og:description" content="智能指针什么是智能指针？智能指针是用于帮助用户管理动态内存的模板类，通过利用 RAII 机制，确保对象在生命周期结束时自动释放内存，而不需要用户手动释放。 目前 C++11 有四种类型的智能指针：unique_ptr、shared_ptr、weak_ptr 和 auto_ptr。 auto_ptrauto_ptr 是 C++98 中的智能指针，由于它不支持托管资源的复制，在 C++11 中被弃用，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-27T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-08-17T14:47:12.359Z">
+<meta property="article:author" content="Haopeng Wu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2023/05/27/c++/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh_CN","comments":true,"permalink":"http://example.com/2023/05/27/c++/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/","path":"2023/05/27/c++/智能指针/","title":"智能指针"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>智能指针 | Nano</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Nano</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-number">1.</span> <span class="nav-text">智能指针</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">什么是智能指针？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#auto-ptr"><span class="nav-number">1.1.1.</span> <span class="nav-text">auto_ptr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#unique-ptr"><span class="nav-number">1.1.2.</span> <span class="nav-text">unique_ptr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#shared-ptr"><span class="nav-number">1.1.3.</span> <span class="nav-text">shared_ptr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#weak-ptr"><span class="nav-number">1.1.4.</span> <span class="nav-text">weak_ptr</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96%E8%87%AA%E8%BA%AB%E7%9A%84-shared-ptr%EF%BC%9F"><span class="nav-number">1.2.</span> <span class="nav-text">一个对象如何获取自身的 shared_ptr？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unique-ptr-%E5%92%8C-shared-ptr-%E7%9A%84%E5%88%A0%E9%99%A4%E5%99%A8%E7%9A%84%E8%AE%BE%E8%AE%A1%E5%B7%AE%E5%BC%82%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">unique_ptr 和 shared_ptr 的删除器的设计差异？</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haopeng Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh_CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/27/c++/%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haopeng Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nano">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="智能指针 | Nano">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          智能指针
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-05-27 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-27T00:00:00+00:00">2023-05-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-17 14:47:12" itemprop="dateModified" datetime="2025-08-17T14:47:12+00:00">2025-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h1><h2 id="什么是智能指针？"><a href="#什么是智能指针？" class="headerlink" title="什么是智能指针？"></a>什么是智能指针？</h2><p>智能指针是用于帮助用户管理动态内存的模板类，通过利用 RAII 机制，确保对象在生命周期结束时自动释放内存，而不需要用户手动释放。</p>
+<p>目前 C++11 有四种类型的智能指针：unique_ptr、shared_ptr、weak_ptr 和 auto_ptr。</p>
+<h3 id="auto-ptr"><a href="#auto-ptr" class="headerlink" title="auto_ptr"></a>auto_ptr</h3><p>auto_ptr 是 C++98 中的智能指针，由于它不支持托管资源的复制，在 C++11 中被弃用，在 C++17 中被删除，因此不建议使用。</p>
+<h3 id="unique-ptr"><a href="#unique-ptr" class="headerlink" title="unique_ptr"></a>unique_ptr</h3><p>unique_ptr 具有托管对象的独占所有权，它不允许被复制，只能通过移动语义来交换资源。适用于管理独占资源。</p>
+<p>std::make_unique 是 c++ 14 引入的，用于创建 unique_ptr 对象。</p>
+<h3 id="shared-ptr"><a href="#shared-ptr" class="headerlink" title="shared_ptr"></a>shared_ptr</h3><p>shared_ptr 的托管对象可以被多个 shared_ptr 共享，其内部维护了一个引用计数，每当发生 shared_ptr 的复制时，该引用计数会增加；当 shared_ptr 析构时该引用计数会减少；当引用计数为 0 时，托管资源会被释放。</p>
+<p>shared_ptr 的引用计数操作是原子性的，即 shared_ptr 是线程安全的，但是 shared_ptr 所托管的对象不是线程安全的，如果多线程访问 shared_ptr 所托管的对象，需要外部同步。</p>
+<p>当两个对象之间通过 shared_ptr 互相引用会造成引用计数永远不为 0 的情况，这意味着所托管的资源永远不会被释放，造成内存泄漏。为此，C++11 引入了 weak_ptr 来解决这个问题。</p>
+<h3 id="weak-ptr"><a href="#weak-ptr" class="headerlink" title="weak_ptr"></a>weak_ptr</h3><p>weak_ptr 是一种弱引用指针，它的复制和析构不会修改 shared_ptr 所维护的引用计数，也不会组织对象被销毁。</p>
+<p>它提供了一些用于查询引用计数（use_count）和判断托管对象是否有效（expired）的方法，并能够获取托管对象的 shared_ptr，当 shared_ptr 所托管的对象被销毁时，将返回 nullptr。</p>
+<h2 id="一个对象如何获取自身的-shared-ptr？"><a href="#一个对象如何获取自身的-shared-ptr？" class="headerlink" title="一个对象如何获取自身的 shared_ptr？"></a>一个对象如何获取自身的 shared_ptr？</h2><p>某个类内调用了一个需要传入 shared_ptr 的函数，我们需要如何获取自身的 shared_ptr？</p>
+<p>首先，我们不能直接传入 this 指针，当这个类的对象被析构时，使用 this 指针构造的 shared_ptr 将会导致段错误。将自身作为 shared_ptr 传入给另一个类或函数使用，这是一种共享的场景，首先这个类必须是由 shared_ptr 管理的。</p>
+<p>C++11 引入了 std::enable_shared_from_this，这个类包含了一个 weak_ptr，而上面所说的类只需要继承 enable_shared_from_this 即可。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyClass</span> : <span class="keyword">public</span> std::enable_shared_from_this&lt;MyClass&gt;    <span class="comment">// 必须公有继承</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="function">std::shared_ptr&lt;MyClass&gt; <span class="title">get_shared_this</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">shared_from_this</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">std::shared_ptr&lt;MyClass&gt; obj = std::<span class="built_in">make_shared</span>&lt;MyClass&gt;(); <span class="comment">// 只有 shared_ptr 才可以使用 shared_from_this</span></span><br></pre></td></tr></table></figure>
+
+<p>当通过 std::make_shared 或 shared_ptr 构造函数创建对象时，</p>
+<h2 id="unique-ptr-和-shared-ptr-的删除器的设计差异？"><a href="#unique-ptr-和-shared-ptr-的删除器的设计差异？" class="headerlink" title="unique_ptr 和 shared_ptr 的删除器的设计差异？"></a>unique_ptr 和 shared_ptr 的删除器的设计差异？</h2><p>unique_ptr 和 shared_ptr 的构造函数都可以传入一个自定义 Deleter，尽管它们都提供了默认的实现。</p>
+<p>unique_ptr 的删除器是模板参数的一部分，删除器的类型会直接影响 unique_ptr 的类型，在对象被析构时会调用删除器的 operator()，因此它可以是一个函数指针也可以是一个对象，根据删除器的大小可能会增加 unique_ptr 的大小。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">T</span>,</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Deleter</span> = std::default_delete&lt;T&gt;</span><br><span class="line">&gt; <span class="keyword">class</span> unique_ptr;</span><br></pre></td></tr></table></figure>
+
+<p>shared_ptr 的删除器是作为 shared_ptr 的成员变量，它其实是一个函数指针，在运行时存在微小的开销，但灵活性更高。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">template</span>&lt; <span class="keyword">class</span> Deleter &gt;</span></span><br><span class="line"><span class="function"><span class="title">shared_ptr</span><span class="params">( std::<span class="type">nullptr_t</span> ptr, Deleter d )</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>unique_ptr 删除器在编译时确定，而 shared_ptr 的删除器可以在运行时动态绑定。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/05/26/c++/%E5%BC%95%E7%94%A8%E5%92%8C%E6%8C%87%E9%92%88/" rel="prev" title="引用和指针">
+                  <i class="fa fa-angle-left"></i> 引用和指针
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/05/28/c++/const%E4%B8%8Econstexpr/" rel="next" title="const 与 constexpr">
+                  const 与 constexpr <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haopeng Wu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha256-dABdfBfUoC8vJUBOwGVdm8L9qlMWaHTIfXt+7GnZCIo=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.23.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="std::call_onceC++ 11 的标准库引入了一个新的模板函数 std::call_once： 123#include &lt;mutex&gt;template&lt; class Callable, class... Args &gt;void call_once(std::once_flag&amp; flag, Callable&amp;&amp; f, Args&amp;&amp;am">
+<meta property="og:type" content="article">
+<meta property="og:title" content="std::call_once">
+<meta property="og:url" content="http://example.com/2024/09/01/c++/call_once/index.html">
+<meta property="og:site_name" content="Nano">
+<meta property="og:description" content="std::call_onceC++ 11 的标准库引入了一个新的模板函数 std::call_once： 123#include &lt;mutex&gt;template&lt; class Callable, class... Args &gt;void call_once(std::once_flag&amp; flag, Callable&amp;&amp; f, Args&amp;&amp;am">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-09-01T00:00:00.000Z">
+<meta property="article:modified_time" content="2025-08-17T14:47:12.359Z">
+<meta property="article:author" content="Haopeng Wu">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://example.com/2024/09/01/c++/call_once/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh_CN","comments":true,"permalink":"http://example.com/2024/09/01/c++/call_once/","path":"2024/09/01/c++/call_once/","title":"std::call_once"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>std::call_once | Nano</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Nano</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#std-call-once"><span class="nav-number">1.</span> <span class="nav-text">std::call_once</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#std-call-once-%E7%9A%84%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.</span> <span class="nav-text">std::call_once 的源码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-once-flag-%E7%9A%84%E6%BA%90%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.2.</span> <span class="nav-text">std::once_flag 的源码实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pthread-once-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.3.</span> <span class="nav-text">pthread_once 的实现</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Haopeng Wu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh_CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/09/01/c++/call_once/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Haopeng Wu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Nano">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="std::call_once | Nano">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          std::call_once
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-09-01 00:00:00" itemprop="dateCreated datePublished" datetime="2024-09-01T00:00:00+00:00">2024-09-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-17 14:47:12" itemprop="dateModified" datetime="2025-08-17T14:47:12+00:00">2025-08-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C-C/" itemprop="url" rel="index"><span itemprop="name">C/C++</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="std-call-once"><a href="#std-call-once" class="headerlink" title="std::call_once"></a>std::call_once</h1><p>C++ 11 的标准库引入了一个新的模板函数 std::call_once：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mutex&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt; <span class="keyword">class</span> Callable, <span class="keyword">class</span>... Args &gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">call_once</span><span class="params">(std::once_flag&amp; flag, Callable&amp;&amp; f, Args&amp;&amp;... args)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>它确保准确执行一次可调用 (Callable) 对象 f ，即使同时有多个线程调用。本文不讨论 call_once 的使用方法，主要研究并记录一下它是如何实现的。</p>
+<p>根据 cppreference 的提示，call_once 通过传入的 once_flag 对象来判断函数对象是否执行过，因此实际上可以通过换一个新的 once_flag 实例来让函数对象再执行一次。</p>
+<p>下面以 Linux 为例，来看看 call_once 的实现原理。</p>
+<h2 id="std-call-once-的源码实现"><a href="#std-call-once-的源码实现" class="headerlink" title="std::call_once 的源码实现"></a>std::call_once 的源码实现</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="type">void</span> __once_proxy(<span class="type">void</span>);</span><br><span class="line"><span class="function"><span class="keyword">template</span>&lt; <span class="keyword">class</span> Callable, <span class="keyword">class</span>... Args &gt;</span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">call_once</span><span class="params">(once_flag&amp; once, Callable&amp;&amp; f, Args&amp;&amp;... args)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> callable = [&amp;] &#123;</span><br><span class="line">        std::<span class="built_in">invoke</span>(std::forward&lt;Callable&gt;(f), std::forward&lt;Args&gt;(args)...);</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function">once_flag::_Prepare_execution <span class="title">exec</span><span class="params">(callable)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="type">int</span> e = __gthread_once(&amp;once._M_once, &amp;__once_proxy))</span><br><span class="line">        __throw_system_error(e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在 call_once 函数中使用 lambada 表达式创建了一个闭包，并将其作为构造 Prepare_execution 对象的入参，然后调用了 __gthread_once，如果调用失败则会抛出一个 system_error 异常。</p>
+<p>这里的 __gthread_once 是什么呢？Linux 环境下它是 pthread_once 的封装，它输入的正是 pthread_once_t 对象的地址和函数指针，感兴趣的同学可以了解一下 pthread_once 的使用。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// int pthread_once(pthread_once_t *once_control, void (*init_routine) (void));</span></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> __gthread_active_p (<span class="type">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">int</span> __gthread_once (<span class="type">__gthread_once_t</span> *__once, <span class="built_in">void</span> (*__func) (<span class="type">void</span>))</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (__gthread_active_p ())</span><br><span class="line">        <span class="keyword">return</span> __gthrw_(pthread_once) (__once, __func);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我有点好奇 __once_proxy 是怎么调用我们传入的函数的，我们接着往下看。</p>
+<h2 id="std-once-flag-的源码实现"><a href="#std-once-flag-的源码实现" class="headerlink" title="std::once_flag 的源码实现"></a>std::once_flag 的源码实现</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">once_flag</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">constexpr</span> <span class="title">once_flag</span><span class="params">()</span> noexpect </span>= <span class="keyword">default</span>;</span><br><span class="line">    <span class="built_in">once_flag</span>(<span class="type">const</span> once_flag &amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    once_flag &amp;<span class="keyword">operator</span>=(<span class="type">const</span> once_flag &amp;) = <span class="keyword">delete</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">__gthread_once_t</span> _M_once = __GTHREAD_ONCE_INIT;     <span class="comment">// 初始状态表示未调用</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">struct</span> <span class="title class_">_Prepare_execution</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> Callable, <span class="keyword">typename</span>... Args&gt;</span></span><br><span class="line"><span class="function">    <span class="keyword">friend</span> <span class="type">void</span> <span class="title">call_once</span><span class="params">(once_flag&amp; once, Callable&amp;&amp; f, Args&amp;&amp;... args)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 once_flag 的实现还是比较简单，它包含一个 __gthread_once_t（pthread_once_t） 类型的成员变量 _M_once，并声明 call_once 为友元函数，这样 call_once 就可以直接取得其中的句柄 _M_once。</p>
+<p>我们前面看到 call_once 的函数体中有构造 once_flag 的 _Prepare_execution 对象，这是其内部实现（这一块可能会有一些差异，其他平台的实现可能是在析构函数直接调用传入的函数对象）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> __thread <span class="type">void</span>* __once_callable;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> __thread <span class="title">void</span> <span class="params">(*__once_call)</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">struct</span> <span class="title class_">once_flag</span>::_Prepare_execution</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> Callable&gt;</span><br><span class="line">    <span class="keyword">explicit</span> _Prepare_execution(Callable&amp; callable)</span><br><span class="line">    &#123;</span><br><span class="line">        once_callable = std::<span class="built_in">addressof</span>(callable);</span><br><span class="line">        once_call = [] &#123;</span><br><span class="line">            (*<span class="built_in">static_cast</span>&lt;Callable *&gt;(once_callable))();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ~_Prepare_execution()</span><br><span class="line">    &#123;</span><br><span class="line">        once_callable = <span class="literal">nullptr</span>;</span><br><span class="line">        once_call = <span class="literal">nullptr</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    _Prepare_execution(<span class="type">const</span> _Prepare_execution&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">    _Prepare_execution &amp;<span class="keyword">operator</span>=(<span class="type">const</span> _Prepare_execution&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看到这里可能会觉得一脸懵逼，这就没啦？谁去调用 once_call 啊？而且 __once_proxy 也跳转不进去。</p>
+<p>我猜测应该是在哪个标准库的源文件里，最终在 libstdc++ 的源码找到了其实现（libstdc++-v3&#x2F;src&#x2F;c++11&#x2F;mutex.cc）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> <span class="type">void</span> __once_proxy()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// The caller stored a function pointer in __once_call. If it requires</span></span><br><span class="line">    <span class="comment">// any state, it gets it from __once_callable.</span></span><br><span class="line">    __once_call();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>朴实无华地调用了 __once_call，可是这样不会有线程安全的问题吗？</p>
+<blockquote>
+<p>__once_call、__once_callable 声明前的 __thread 是 C++11 前特有的 TLS（Thread Local State）声明方式，等效于 thread_local</p>
+</blockquote>
+<h2 id="pthread-once-的实现"><a href="#pthread-once-的实现" class="headerlink" title="pthread_once 的实现"></a>pthread_once 的实现</h2><p>感觉看了个寂寞，毕竟核心实现还是依赖于 pthread_once，那还是看看 pthread_once 是怎么实现的吧，获取源码：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://https.git.savannah.gnu.org/git/hurd/libpthread.git</span><br></pre></td></tr></table></figure>
+
+<p>首先是 pthread_once_t 的定义（sysdeps\pthread\bits\types\struct___pthread_once.h）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">pthread_once</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="type">int</span> __run;</span><br><span class="line">    <span class="type">__pthread_spinlock_t</span> __lock;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>它由一个自选锁和一个标志位组成，这个标志位猜测是用于检测是否已经执行过。然后是 pthread_once 函数的实现（sysdeps&#x2F;generic&#x2F;pt-once.c）：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> __pthread_once (<span class="type">pthread_once_t</span> *once_control, <span class="type">void</span> (*init_routine) (<span class="type">void</span>))</span><br><span class="line">&#123;</span><br><span class="line">    atomic_full_barrier ();</span><br><span class="line">    <span class="keyword">if</span> (once_control-&gt;__run == <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        __pthread_spin_lock (&amp;once_control-&gt;__lock);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (once_control-&gt;__run == <span class="number">0</span>)</span><br><span class="line">	    &#123;</span><br><span class="line">	        init_routine ();</span><br><span class="line">	        atomic_full_barrier ();</span><br><span class="line">	        once_control-&gt;__run = <span class="number">1</span>;</span><br><span class="line">	    &#125;</span><br><span class="line"></span><br><span class="line">        __pthread_spin_unlock (&amp;once_control-&gt;__lock);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line">strong_alias (__pthread_once, pthread_once);</span><br></pre></td></tr></table></figure>
+
+<p>一个很经典的 DCLP（Double-Checked Locking Pattern）实现，atomic_full_barrier 用于确保原子操作的顺序性，配合自选锁使得对程序性能的影响达到了更小。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/06/01/c++/%E8%BF%AD%E4%BB%A3%E5%99%A8/" rel="prev" title="迭代器">
+                  <i class="fa fa-angle-left"></i> 迭代器
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/04/28/c++/gtest%E5%85%A5%E9%97%A8/" rel="next" title="gtest入门">
+                  gtest入门 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Haopeng Wu</span>
+  </div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
